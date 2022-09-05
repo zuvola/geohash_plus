@@ -1,7 +1,7 @@
 name: geohash_plus
 description: Customizable Geohash, including Base16 and custom strings. Also available to get adjacent cells.
-version: 1.0.0
-homepage: https://github.com/zuvola/geohash_dart
+version: 1.0.0+1
+homepage: https://github.com/zuvola/geohash_plus
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
