@@ -8,7 +8,7 @@
 
 "１文字あたりのBit数"と "変換用アルファベット"をカスタマイズできるGeohashです。  
 これにより通常のGeohashはBase32ですが、変換アルゴリズムはそのままでBase16など目的に合ったエンコード・デコードを行うことができます。  
-また、隣接するセルの取得も可能です。  
+また、隣接するセルの検索や、あるエリアをカバーするジオハッシュの検索も可能です。
 
 
 ## Getting started
@@ -83,4 +83,14 @@ factory GeoHash.decode(String geohash, {int bits = 5, String? alphabet})
 
 ```dart
 GeoHash adjacent(Direction direction)
+```
+
+### coverBounds
+
+`bounds`エリアをカバーするGeohashの配列を各精度毎に格納したMapを取得します。
+探索終了する量を`threshold`で、精度を`maxPrecision`で設定します。
+
+```dart
+static Map<int, List<GeoHash>> coverBounds(LatLngBounds bounds,
+{int maxPrecision = 12, int threshold = 5, int bits = 5, String? alphabet})
 ```

@@ -6,9 +6,9 @@
 **[English](https://github.com/zuvola/geohash_plus/blob/master/README.md), [日本語](https://github.com/zuvola/geohash_plus/blob/master/README_jp.md)**
 
 
-Geohash allows you to customize the "number of bits per character" and "conversion alphabet".  
+Customizable Geohash for "bits per character" and "converted alphabet." 
 This allows you to encode and decode in a way that suits your purposes, such as Base16 without changing the conversion algorithm, whereas the normal Geohash is Base32.  
-It is also possible to retrieve adjacent cells.  
+It is also possible to search for adjacent cells and to search for Geohash covering an area. 
 
 
 ## Getting started
@@ -32,7 +32,7 @@ void main() {
 
 ## Base16/64
 
-If `bits` is 4bit, it is encoded and decoded in Base16, and if `bits` is 6bit, it is encoded and decoded in Base64.
+If `bits` is 4 bits, it is encoded/decoded in Base16, and if `bits` is 6 bits, it is encoded/decoded in Base64.
 The `bits` can be from 1 to 6.
 If `alphabet` is not specified, the string defined in RFC4648 is assigned.
 
@@ -44,7 +44,7 @@ final hash64 = GeoHash.decode('0St9eZa24', bits: 6);
 
 ## Custom alphabet
 
-You can also specify the `alphabet` to be used to generate your own string.
+It is also possible to specify an `alphabet` to be used to generate a unique string.
 
 ```dart
 final hash =
@@ -58,7 +58,7 @@ print(hash.hash); // &!++##%#-
 ### encode
 
 Factory method to create a GeoHash object from latitude and longitude.
-Set the number of characters in the GeoHash with `precision` and the number of bytes per character with `bits`.
+Set the number of characters in the Geohash with `precision` and the number of bytes per character with `bits`.
 You can change the string to use with `alphabet`.
 
 ```dart
@@ -83,4 +83,14 @@ Specify the direction with `direction`.
 
 ```dart
 GeoHash adjacent(Direction direction)
+```
+
+### coverBounds
+
+Gets a Map containing an array of geohashes covering `bounds` area at each precision.
+The amount by which the search is terminated is set by `threshold`, and the precision is set by `maxPrecision`.
+
+```dart
+static Map<int, List<GeoHash>> coverBounds(LatLngBounds bounds,
+{int maxPrecision = 12, int threshold = 5, int bits = 5, String? alphabet})
 ```

@@ -83,4 +83,27 @@ void main() {
         GeoHash.encode(57.64911, 10.40744, bits: 3, alphabet: '@*+-!#&%');
     expect(hash.hash, '&!++##%#-');
   });
+  test('LatLng', () {
+    final loc1 = LatLng(0, 0);
+    final mv1 = loc1.move(lngDelta: 30);
+    expect(mv1.latitude, 0);
+    expect(mv1.longitude, 30);
+    final loc2 = LatLng(0, 170);
+    final mv2 = loc2.move(lngDelta: 30);
+    expect(mv2.latitude, 0);
+    expect(mv2.longitude, -160);
+    final loc3 = LatLng(0, -170);
+    final mv3 = loc3.move(lngDelta: -30);
+    expect(mv3.latitude, 0);
+    expect(mv3.longitude, 160);
+  });
+  test('coverBounds', () {
+    final ne = LatLng(57.64911, 10.40744);
+    final sw = LatLng(57.649, 10.407);
+    final cover =
+        GeoHash.coverBounds(LatLngBounds(northEast: ne, southWest: sw));
+    expect(cover.keys.length, 4);
+    expect(cover[9]?.length, 4);
+    expect(cover[10]?.length, 33);
+  });
 }

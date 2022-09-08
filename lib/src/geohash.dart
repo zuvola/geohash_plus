@@ -23,7 +23,7 @@ class GeoHash {
   /// Geohash string
   final String hash;
 
-  /// Bound box
+  /// Bounding box
   final LatLngBounds bounds;
 
   /// Bits per char
@@ -56,6 +56,14 @@ class GeoHash {
   GeoHash adjacent(Direction direction) =>
       _GeoHasher.adjacent(this, direction, precision, bits, alphabet);
 
+  /// Gets a Map containing an array of geohashes covering [bounds] area at each precision.
+  static Map<int, List<GeoHash>> coverBounds(LatLngBounds bounds,
+          {int maxPrecision = 12,
+          int threshold = 5,
+          int bits = 5,
+          String? alphabet}) =>
+      _GeoHasher.coverBounds(bounds, maxPrecision, threshold, bits, alphabet);
+
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -71,7 +79,7 @@ class GeoHash {
 
   @override
   String toString() {
-    return 'GeoHash(center: $center, hash: $hash, bounds: $bounds, bits: $bits, alphabet: $alphabet)';
+    return 'GeoHash(center: $center, hash: $hash)';
   }
 }
 
@@ -93,6 +101,7 @@ class _GeoHasher {
   /// Encodes latitude/longitude to geohash
   static GeoHash encode(double latitude, double longitude, int precision,
       int bits, String? alphabet) {
+    if (precision < 1) throw ArgumentError();
     return _process(bits, alphabet, (latRange, lngRange, table) {
       final geohash = StringBuffer();
       var even = true;
@@ -242,5 +251,68 @@ class _GeoHasher {
       bits: bits,
       alphabet: alphabet,
     );
+  }
+
+  static int _commonPrecision(String a, String b) {
+    if (a == b) return b.length;
+    for (var i = 2; i < b.length; i++) {
+      if (!a.startsWith(b.substring(0, i))) {
+        return i - 1;
+      }
+    }
+    return 1;
+  }
+
+  static List<GeoHash> _coverBounds(
+      LatLngBounds bounds, int precision, int bits, String? alphabet) {
+    final ne = bounds.northEast;
+    final sw = bounds.southWest;
+    final neHash = GeoHash.encode(ne.latitude, ne.longitude,
+        precision: precision, bits: bits, alphabet: alphabet);
+    final swHash = GeoHash.encode(sw.latitude, sw.longitude,
+        precision: precision, bits: bits, alphabet: alphabet);
+
+    final neBounds = neHash.bounds;
+    final swBounds = swHash.bounds;
+    final width = neBounds.northEast.longitude - swBounds.southWest.longitude;
+    final height = neBounds.northEast.latitude - swBounds.southWest.latitude;
+    final xMax = width / neBounds.lngDelta;
+    final yMax = height / neBounds.latDelta;
+    final list = <GeoHash>[];
+
+    for (var x = 0; x < xMax; x++) {
+      final lngDelta = neBounds.lngDelta * -x;
+      for (var y = 0; y < yMax; y++) {
+        final latDelta = neBounds.latDelta * -y;
+        final latLng =
+            neHash.center.move(latDelta: latDelta, lngDelta: lngDelta);
+        final hash = GeoHash.encode(latLng.latitude, latLng.longitude,
+            precision: precision, bits: bits, alphabet: alphabet);
+        list.add(hash);
+      }
+    }
+    return list;
+  }
+
+  /// Gets a Map containing an array of GeoHash covering the bounding box for each precision.
+  static Map<int, List<GeoHash>> coverBounds(LatLngBounds bounds,
+      int maxPrecision, int threshold, int bits, String? alphabet) {
+    final ne = bounds.northEast;
+    final sw = bounds.southWest;
+    final neHash = GeoHash.encode(ne.latitude, ne.longitude,
+        precision: maxPrecision, bits: bits, alphabet: alphabet);
+    final swHash = GeoHash.encode(sw.latitude, sw.longitude,
+        precision: maxPrecision, bits: bits, alphabet: alphabet);
+
+    var precision = _commonPrecision(neHash.hash, swHash.hash);
+    var list = _coverBounds(bounds, precision, bits, alphabet);
+
+    final map = <int, List<GeoHash>>{precision: list};
+    while (list.length < threshold && precision < maxPrecision) {
+      list = _coverBounds(bounds, precision++, bits, alphabet);
+      map[precision] = list;
+    }
+
+    return map;
   }
 }
