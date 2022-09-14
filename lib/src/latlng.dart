@@ -81,7 +81,7 @@ class LatLngBounds {
   LatLng get northWest => LatLng(northEast.latitude, southWest.longitude);
 
   /// South-east corner of this bounds
-  LatLng get southEast => LatLng(southEast.latitude, northWest.longitude);
+  LatLng get southEast => LatLng(southWest.latitude, northEast.longitude);
 
   /// Amount of north-to-south distance
   double get latDelta => northEast.latitude - southWest.latitude;

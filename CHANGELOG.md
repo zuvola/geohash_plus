@@ -1,3 +1,6 @@
+## 1.1.1
+- Bug fixes in `LatLngBounds.southEast`
+
 ## 1.1.0
 - Adds `coverBounds`
 

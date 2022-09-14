@@ -1,6 +1,6 @@
 name: geohash_plus
 description: Customizable Geohash, including Base16 and custom strings. Also available to get adjacent cells.
-version: 1.1.0
+version: 1.1.1
 homepage: https://github.com/zuvola/geohash_plus
 
 environment:

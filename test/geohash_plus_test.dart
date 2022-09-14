@@ -97,6 +97,20 @@ void main() {
     expect(mv3.latitude, 0);
     expect(mv3.longitude, 160);
   });
+  test('bounds', () {
+    final bounds = LatLngBounds(
+      northEast: LatLng(57.6, 10.6),
+      southWest: LatLng(57.5, 10.5),
+    );
+    expect(bounds.northEast.latitude, 57.6);
+    expect(bounds.northEast.longitude, 10.6);
+    expect(bounds.southWest.latitude, 57.5);
+    expect(bounds.southWest.longitude, 10.5);
+    expect(bounds.northWest.latitude, 57.6);
+    expect(bounds.northWest.longitude, 10.5);
+    expect(bounds.southEast.latitude, 57.5);
+    expect(bounds.southEast.longitude, 10.6);
+  });
   test('coverBounds', () {
     final ne = LatLng(57.64911, 10.40744);
     final sw = LatLng(57.649, 10.407);
